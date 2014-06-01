@@ -53,7 +53,6 @@ public class Watcher {
             WatchKey watchKey =watchService.poll(60, TimeUnit.HOURS);
             List<WatchEvent<?>> events = watchKey.pollEvents();
             for (WatchEvent event : events) {
-                System.out.println(event.kind());
                 this.watchEventProcessor.process(watchKey, event);
 
                 processNewDirectories(watchKey, event);

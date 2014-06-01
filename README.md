@@ -46,6 +46,13 @@ The agent-jar will be target/watchcopy-agent.jar
 	export JAVA_OPTS="$JAVA_OPTS -javaagent:<pathTo>/springloaded-1.2.0.RELEASE.jar"
 
 	$SERVER/bin/catalina.sh jpda start
+
+# Running from command line
+
+    java -jar -javaagent:<pathTo>/watchcopy-agent.jar \
+              	        -Dwatchcopy.from=<yourMavenProject>/target/classes \
+              	        -Dwatchcopy.to=${SERVER}/webapps/ROOT/WEB-INF/classes
+ 
 	
 	
 

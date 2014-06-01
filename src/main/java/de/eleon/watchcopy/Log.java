@@ -2,6 +2,9 @@ package de.eleon.watchcopy;
 
 import java.util.Date;
 
+/**
+ * Dumb logging class
+ */
 public class Log {
 
     public static void LOG(String message, Object... args) {

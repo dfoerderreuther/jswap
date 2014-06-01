@@ -6,16 +6,31 @@ import java.nio.file.*;
 import static de.eleon.watchcopy.Log.LOG;
 import static java.nio.file.StandardWatchEventKinds.*;
 
+/**
+ * Handles all change events and synchronize the changings to the target directory
+ */
 class WatchEventProcessor {
 
     private final Path baseFrom;
     private final Path baseTo;
 
+    /**
+     * Constructor
+     *
+     * @param baseFrom Path of base directory
+     * @param baseTo Path of target directory
+     */
     public WatchEventProcessor(Path baseFrom, Path baseTo) {
         this.baseFrom = baseFrom;
         this.baseTo = baseTo;
     }
 
+    /**
+     * Process a change event
+     *
+     * @param watchKey WatchKey which has detected the change
+     * @param event the published WatchEvent
+     */
     public void process(WatchKey watchKey, WatchEvent event) {
         WatchEvent.Kind eventKind = event.kind();
         Path watchedPath = (Path)watchKey.watchable();

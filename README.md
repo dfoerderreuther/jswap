@@ -20,7 +20,7 @@ The agent-jar will be target/watchcopy-agent.jar
         -Dwatchcopy.to=<pathOfYourRunningDirectory>
         ... SomeJavaClass
         
-# Running with spring loaded 
+# Running with Spring Loaded 
 
     java -javaagent:<pathTo>/watchcopy-agent.jar \
         -Dwatchcopy.from=<pathOfYourIDEsBinDirectory> \
@@ -28,7 +28,7 @@ The agent-jar will be target/watchcopy-agent.jar
         -javaagent:<pathTo>/springloaded-{VERSION}.jar -noverify SomeJavaClass
 
 
-# Running with spring loaded and tomcat
+# Running with Spring Loaded and tomcat
 
     SERVER=<pathTo>/server/apache-tomcat
 

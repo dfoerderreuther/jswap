@@ -3,7 +3,7 @@
 ## What is WatchCopy?
 
 WatchCopy is a JVM agent for synchronizing your IDEs or mavens bin directory with the running classpath. Combined with 
-Spring Loaded (https://github.com/spring-projects/spring-loaded/) you have an alternative to jrebel. 
+Spring Loaded (https://github.com/spring-projects/spring-loaded/) you get an alternative to jrebel. 
 
 # Installation
 

@@ -47,9 +47,9 @@ The agent-jar will be target/watchcopy-agent.jar
 
 	$SERVER/bin/catalina.sh jpda start
 
-# Running from command line
+# Running standalone from command line
 
-    java -jar -javaagent:<pathTo>/watchcopy-agent.jar \
+    java -jar <pathTo>/watchcopy-agent.jar \
               	        -Dwatchcopy.from=<yourMavenProject>/target/classes \
               	        -Dwatchcopy.to=${SERVER}/webapps/ROOT/WEB-INF/classes
  

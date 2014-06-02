@@ -1,6 +1,6 @@
 package de.eleon.watchcopy.agent;
 
-import de.eleon.watchcopy   .Log;
+import de.eleon.watchcopy.Log;
 import de.eleon.watchcopy.WatchCopy;
 
 import java.io.IOException;
@@ -9,37 +9,35 @@ import java.lang.instrument.Instrumentation;
 import static de.eleon.watchcopy.Log.ERROR;
 
 /**
- * JVM Agent to start WatchCopy inside a running JVM
+ * JVM Agent to init WatchCopy inside a running JVM
  */
 public class WatchCopyAgent {
 
-    private static Instrumentation instrumentation;
+    protected static Instrumentation instrumentation;
+    protected static WatchCopy watchCopy;
 
-    public static void premain(String args, Instrumentation inst) throws Exception {
-        if (instrumentation != null) {
-            return;
-        }
-        instrumentation = inst;
-        start();
+    public static void premain(String args, Instrumentation instrumentation) throws Exception {
+        agentmain(args, instrumentation);
     }
 
-    public static void agentmain(String args, Instrumentation inst) throws Exception {
-        if (instrumentation != null) {
+    public static void agentmain(String args, Instrumentation instrumentation) throws Exception {
+        if (WatchCopyAgent.instrumentation != null) {
             return;
         }
-        instrumentation = inst;
-        start();
+        WatchCopyAgent.instrumentation = instrumentation;
+
+        startWatchCopy();
     }
 
-    private static void start() {
+    private static void startWatchCopy() {
         Log.LOG("init");
         String from = System.getProperty("watchcopy.from");
         String to = System.getProperty("watchcopy.to");
-        if (from == null || to == null) {
+        if (from == null || from.isEmpty() || to == null || to.isEmpty()) {
             throw new UnsupportedOperationException("Java was not started with -Dwatchcopy.from=<yourMavenProject>/target/classes and -Dwatchcopy.to=${SERVER}/webapps/ROOT/WEB-INF/classes");
         }
         try {
-            WatchCopy watchCopy = new WatchCopy(from, to);
+            watchCopy = new WatchCopy(from, to);
             watchCopy.run(true);
         } catch (IOException e) {
             ERROR(e, "error");

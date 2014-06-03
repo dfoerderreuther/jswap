@@ -16,19 +16,19 @@ The agent-jar will be target/watchcopy-agent.jar
 # Running 
 
     java -javaagent:<pathTo>/watchcopy-agent.jar \
-        -Dwatchcopy.from=<pathOfYourIDEsBinDirectory> \
-        -Dwatchcopy.to=<pathOfYourRunningDirectory>
+        -Dwatchcopy.from[0]=<pathOfYourIDEsBinDirectory> \
+        -Dwatchcopy.to[0]=<pathOfYourRunningDirectory>
         ... SomeJavaClass
         
 # Running with Spring Loaded 
 
     java -javaagent:<pathTo>/watchcopy-agent.jar \
-        -Dwatchcopy.from=<pathOfYourIDEsBinDirectory> \
-        -Dwatchcopy.to=<pathOfYourRunningDirectory>
+        -Dwatchcopy.from[0]=<pathOfYourIDEsBinDirectory> \
+        -Dwatchcopy.to[0]=<pathOfYourRunningDirectory>
         -javaagent:<pathTo>/springloaded-{VERSION}.jar -noverify SomeJavaClass
 
 
-# Running with Spring Loaded and tomcat
+# Running with Spring Loaded and tomcat, copy classes and resources
 
     SERVER=<pathTo>/server/apache-tomcat
 
@@ -39,8 +39,10 @@ The agent-jar will be target/watchcopy-agent.jar
 
 	# WatchCopy
 	export JAVA_OPTS="$JAVA_OPTS -javaagent:<pathTo>/watchcopy-agent.jar \
-	        -Dwatchcopy.from=<yourMavenProject>/target/classes \
-	        -Dwatchcopy.to=${SERVER}/webapps/ROOT/WEB-INF/classes"
+	        -Dwatchcopy.from[0]=<yourMavenProject>/target/classes \
+	        -Dwatchcopy.to[0]=${SERVER}/webapps/ROOT/WEB-INF/classes \
+            -Dwatchcopy.from[1]=<yourMavenProject>/src/main/webapps \
+            -Dwatchcopy.to[1]=${SERVER}/webapps/ROOT""
 
 	# SpringLoaded
 	export JAVA_OPTS="$JAVA_OPTS -javaagent:<pathTo>/springloaded-1.2.0.RELEASE.jar"
@@ -50,8 +52,8 @@ The agent-jar will be target/watchcopy-agent.jar
 # Running standalone from command line
 
     java -jar <pathTo>/watchcopy-agent.jar \
-              	        -Dwatchcopy.from=<yourMavenProject>/target/classes \
-              	        -Dwatchcopy.to=${SERVER}/webapps/ROOT/WEB-INF/classes
+              	        -Dwatchcopy.from[0]=<yourMavenProject>/target/classes \
+              	        -Dwatchcopy.to[0]=${SERVER}/webapps/ROOT/WEB-INF/classes
  
 	
 	

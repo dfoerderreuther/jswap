@@ -1,9 +1,13 @@
 package de.eleon.watchcopy;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -23,22 +27,25 @@ public class WatchCopy {
     private final WatchEventProcessor watchEventProcessor;
     private ScheduledExecutorService executor;
 
-    private final Path baseFrom;
+    private final List<Config> configs;
+
+    private final Map<WatchKey, Config> watchKeyConfigMap = Maps.newHashMap();
 
     /**
      * Constructor
      *
-     * @param baseFrom String with path of the watched directory. Changes will be synchronized with:
-     * @param baseTo String with path of target directory.
+     * @param configs List of watch configs
      * @throws IOException
      */
-    public WatchCopy(String baseFrom, String baseTo) throws IOException {
-        LOG("START: from %s to %s", baseFrom, baseTo);
-        this.baseFrom = Paths.get(baseFrom);
+    public WatchCopy(List<Config> configs) throws IOException {
+        LOG("START: configs %s", Joiner.on(", ").join(configs).toString());
+        this.configs = configs;
         this.watchService = FileSystems.getDefault().newWatchService();
-        this.watchEventProcessor = new WatchEventProcessor(this.baseFrom, Paths.get(baseTo));
+        this.watchEventProcessor = new WatchEventProcessor();
 
-        registerAll(this.baseFrom);
+        for (Config config : configs) {
+            registerAll(config);
+        }
 
     }
 
@@ -71,9 +78,10 @@ public class WatchCopy {
             WatchKey watchKey = watchService.poll(60, TimeUnit.HOURS);
             List<WatchEvent<?>> events = watchKey.pollEvents();
             for (WatchEvent event : events) {
-                this.watchEventProcessor.process(watchKey, event);
+                Config config = watchKeyConfigMap.get(watchKey);
+                this.watchEventProcessor.process(watchKey, event, config);
 
-                processNewDirectories(watchKey, event);
+                processNewDirectories(watchKey, event, config);
             }
             if (!watchKey.reset()) {
                 LOG("watch key no longer valid");
@@ -83,33 +91,34 @@ public class WatchCopy {
         }
     }
 
-    private void registerAll(Path path) throws IOException {
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+    private void registerAll(final Config config) throws IOException {
+        Files.walkFileTree(config.getFrom(), new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
             {
-                register(dir);
+                register(dir, config);
                 return FileVisitResult.CONTINUE;
             }
         });
     }
 
-    private void register(Path path) throws IOException {
-        path.register(
+    private void register(Path path, Config config) throws IOException {
+        WatchKey watchKey = path.register(
                 watchService,
                 ENTRY_CREATE,
                 ENTRY_DELETE,
                 ENTRY_MODIFY
         );
+        watchKeyConfigMap.put(watchKey, config);
     }
 
-    private void processNewDirectories(WatchKey watchKey, WatchEvent event) {
+    private void processNewDirectories(WatchKey watchKey, WatchEvent event, Config config) {
         if (event.kind().equals(ENTRY_CREATE)) {
             Path createdEntry = Paths.get(((Path) watchKey.watchable()).toString() + "/" + ((Path) event.context()).toString());
             if (Files.isDirectory(createdEntry)) {
                 try {
                     LOG("register new directory %s", createdEntry);
-                    register(createdEntry);
+                    register(createdEntry, config);
                 } catch (IOException e) {
                     ERROR("ERROR, cant register new directory %s, %s", createdEntry, e.toString());
                 }

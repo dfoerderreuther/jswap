@@ -1,12 +1,13 @@
 package de.eleon.watchcopy.agent;
 
+import de.eleon.watchcopy.Config;
+import de.eleon.watchcopy.Configs;
 import de.eleon.watchcopy.Log;
 import de.eleon.watchcopy.WatchCopy;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-
-import static de.eleon.watchcopy.Log.ERROR;
+import java.util.List;
 
 /**
  * JVM Agent to init WatchCopy inside a running JVM
@@ -31,16 +32,20 @@ public class WatchCopyAgent {
 
     private static void startWatchCopy() {
         Log.LOG("init");
-        String from = System.getProperty("watchcopy.from");
-        String to = System.getProperty("watchcopy.to");
-        if (from == null || from.isEmpty() || to == null || to.isEmpty()) {
-            throw new UnsupportedOperationException("Java was not started with -Dwatchcopy.from=<yourMavenProject>/target/classes and -Dwatchcopy.to=${SERVER}/webapps/ROOT/WEB-INF/classes");
-        }
         try {
-            watchCopy = new WatchCopy(from, to);
+            List<Config> configs = Configs.getConfigsFromSystemProperties("watchcopy");
+            watchCopy = new WatchCopy(configs);
             watchCopy.run(true);
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedOperationException("\nJVM was not started with \n" +
+                    "<pathTo>/watchcopy-agent.jar \\\n" +
+                    "\t -Dwatchcopy.from[0]=<yourBuildDirectory> \\\n" +
+                    "\t -Dwatchcopy.to[0]=<yourClasspathDirectory>\n", e);
         } catch (IOException e) {
-            ERROR(e, "error");
+            throw new UnsupportedOperationException("\nJVM was not started with \n" +
+                    "<pathTo>/watchcopy-agent.jar \\\n" +
+                    "\t -Dwatchcopy.from[0]=<yourBuildDirectory> \\\n" +
+                    "\t -Dwatchcopy.to[0]=<yourClasspathDirectory>\n", e);
         }
     }
 

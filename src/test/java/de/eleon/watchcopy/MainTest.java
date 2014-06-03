@@ -32,8 +32,8 @@ public class MainTest extends TestCase {
         System.out.println("setUp");
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
-        System.setProperty("watchcopy.from", "");
-        System.setProperty("watchcopy.to", "");
+        System.setProperty("watchcopy.from[0]", "");
+        System.setProperty("watchcopy.to[0]", "");
     }
 
     @Test
@@ -44,8 +44,8 @@ public class MainTest extends TestCase {
 
     @Test
     public void shouldStartWithMain() throws Exception {
-        System.setProperty("watchcopy.from", baseFrom.toString());
-        System.setProperty("watchcopy.to", baseTo.toString());
+        System.setProperty("watchcopy.from[0]", baseFrom.toString());
+        System.setProperty("watchcopy.to[0]", baseTo.toString());
 
         Main.main(new String[]{});
         assertTrue(Main.watchCopy.active());

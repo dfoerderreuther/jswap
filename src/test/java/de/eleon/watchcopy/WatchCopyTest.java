@@ -1,7 +1,7 @@
 package de.eleon.watchcopy;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,25 +11,27 @@ import java.nio.file.Paths;
 
 import static de.eleon.watchcopy.test.Util.dropCreate;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class WatchCopyTest {
 
-    Path baseFrom ;
+    Path baseFrom;
     Path baseTo;
+    Path baseFromB;
+    Path baseToB;
 
     @Before
     public void setUp() throws IOException {
         System.out.println("setUp");
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
+        baseFromB = dropCreate("/tmp/fromB");
+        baseToB = dropCreate("/tmp/toB");
     }
 
     @Test
     public void shouldCopyFile() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(baseFrom.toString(), baseTo.toString());
+        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
         watchCopy.watch();
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
@@ -37,7 +39,7 @@ public class WatchCopyTest {
 
     @Test
     public void shouldCopyDirectory() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(baseFrom.toString(), baseTo.toString());
+        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
         watchCopy.watch();
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir")));
@@ -47,7 +49,7 @@ public class WatchCopyTest {
     public void shouldCopyFileFromSubdir() throws IOException {
         Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
         Files.createDirectory(Paths.get(baseTo.toString() + "/dir"));
-        WatchCopy watchCopy = new WatchCopy(baseFrom.toString(), baseTo.toString());
+        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         Files.createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
         watchCopy.watch();
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir/test.txt")));
@@ -55,7 +57,7 @@ public class WatchCopyTest {
 
     @Test(timeout=1000)
     public void shouldCopyFileFromNewSubdir() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(baseFrom.toString(), baseTo.toString());
+        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
         watchCopy.watch();
@@ -68,7 +70,7 @@ public class WatchCopyTest {
 
     @Test
     public void shoulcCopyChangedFile() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(baseFrom.toString(), baseTo.toString());
+        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Path fileFrom = Paths.get(baseFrom.toString() + "/test.txt");
         Files.createFile(fileFrom);
@@ -83,7 +85,7 @@ public class WatchCopyTest {
 
     @Test
     public void shouldDeleteFile() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(baseFrom.toString(), baseTo.toString());
+        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Path fileFrom = Paths.get(baseFrom.toString() + "/test.txt");
         Files.createFile(fileFrom);
@@ -98,10 +100,28 @@ public class WatchCopyTest {
         assertFalse(Files.exists(fileTo));
     }
 
-    @Ignore // don't know why
     @Test
+    public void shouldWorkWithTwoConfigs() throws IOException {
+        WatchCopy watchCopy = new WatchCopy(
+                ImmutableList.<Config>builder()
+                        .add(new Config(baseFrom.toString(), baseTo.toString(), ""))
+                        .add(new Config(baseFromB.toString(), baseToB.toString(), ""))
+                        .build());
+
+        Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        watchCopy.watch();
+        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
+
+        Files.createFile(Paths.get(baseFromB.toString() + "/test.txt"));
+        watchCopy.watch();
+        assertTrue(Files.exists(Paths.get(baseToB.toString() + "/test.txt")));
+    }
+
+
+    //@Ignore // don't know why
+    //@Test
     public void shouldDeleteDirectory() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(baseFrom.toString(), baseTo.toString());
+        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Path dirFrom = Paths.get(baseFrom.toString() + "/dir");
         Files.createDirectory(dirFrom);

@@ -11,47 +11,40 @@ import static java.nio.file.StandardWatchEventKinds.*;
  */
 class WatchEventProcessor {
 
-    private final Path baseFrom;
-    private final Path baseTo;
-
     /**
      * Constructor
      *
-     * @param baseFrom Path of base directory
-     * @param baseTo Path of target directory
      */
-    public WatchEventProcessor(Path baseFrom, Path baseTo) {
-        this.baseFrom = baseFrom;
-        this.baseTo = baseTo;
+    public WatchEventProcessor() {
     }
 
     /**
      * Process a change event
-     *
-     * @param watchKey WatchKey which has detected the change
+     *  @param watchKey WatchKey which has detected the change
      * @param event the published WatchEvent
+     * @param config
      */
-    public void process(WatchKey watchKey, WatchEvent event) {
+    public void process(WatchKey watchKey, WatchEvent event, Config config) {
         WatchEvent.Kind eventKind = event.kind();
         Path watchedPath = (Path)watchKey.watchable();
         Path target = (Path)event.context();
 
-        String relativePath = watchedPath.toString().substring(this.baseFrom.toString().length()) + "/" + target;
+        String relativePath = watchedPath.toString().substring(config.getFrom().toString().length()) + "/" + target;
 
         if (eventKind.equals(ENTRY_CREATE)) {
-            copy(relativePath);
+            copy(relativePath, config);
 
         } else if (eventKind.equals(ENTRY_DELETE)) {
-            delete(relativePath);
+            delete(relativePath, config);
 
         } else if (eventKind.equals(ENTRY_MODIFY)) {
-            copy(relativePath);
+            copy(relativePath, config);
 
         }
     }
 
-    private void delete(String relativePath)  {
-        Path delete = toPath(this.baseTo, relativePath);
+    private void delete(String relativePath, Config config)  {
+        Path delete = toPath(config.getTo(), relativePath);
         LOG("delete: %s", delete);
         try {
             Files.delete(delete);
@@ -60,9 +53,9 @@ class WatchEventProcessor {
         }
     }
 
-    private void copy(String relativePath)  {
-        Path from = toPath(this.baseFrom, relativePath);
-        Path to = toPath(this.baseTo, relativePath);
+    private void copy(String relativePath, Config config)  {
+        Path from = toPath(config.getFrom(), relativePath);
+        Path to = toPath(config.getTo(), relativePath);
         LOG("copy: %s > %s", from, to);
         try {
             Files.copy(

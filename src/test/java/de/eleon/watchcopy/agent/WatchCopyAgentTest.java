@@ -36,8 +36,8 @@ public class WatchCopyAgentTest extends TestCase {
         baseTo = dropCreate("/tmp/to");
         WatchCopyAgent.instrumentation = null;
         WatchCopyAgent.watchCopy = null;
-        System.setProperty("watchcopy.from", "");
-        System.setProperty("watchcopy.to", "");
+        System.setProperty("watchcopy.from[0]", "");
+        System.setProperty("watchcopy.to[0]", "");
     }
 
     @Test
@@ -48,8 +48,8 @@ public class WatchCopyAgentTest extends TestCase {
 
     @Test
     public void shouldStartWithPremain() throws Exception {
-        System.setProperty("watchcopy.from", baseFrom.toString());
-        System.setProperty("watchcopy.to", baseTo.toString());
+        System.setProperty("watchcopy.from[0]", baseFrom.toString());
+        System.setProperty("watchcopy.to[0]", baseTo.toString());
 
         WatchCopyAgent.premain("", instrumentation);
         assertTrue(WatchCopyAgent.watchCopy.active());
@@ -59,8 +59,8 @@ public class WatchCopyAgentTest extends TestCase {
 
     @Test
     public void shouldStartWithAgentmain() throws Exception {
-        System.setProperty("watchcopy.from", baseFrom.toString());
-        System.setProperty("watchcopy.to", baseTo.toString());
+        System.setProperty("watchcopy.from[0]", baseFrom.toString());
+        System.setProperty("watchcopy.to[0]", baseTo.toString());
 
         WatchCopyAgent.agentmain("", instrumentation);
         assertTrue(WatchCopyAgent.watchCopy.active());
@@ -70,8 +70,8 @@ public class WatchCopyAgentTest extends TestCase {
 
     @Test
     public void shouldSetInstrumentation() throws Exception {
-        System.setProperty("watchcopy.from", baseFrom.toString());
-        System.setProperty("watchcopy.to", baseTo.toString());
+        System.setProperty("watchcopy.from[0]", baseFrom.toString());
+        System.setProperty("watchcopy.to[0]", baseTo.toString());
 
         WatchCopyAgent.agentmain("", instrumentation);
         assertThat(WatchCopyAgent.getInstrumentation(), is(instrumentation));

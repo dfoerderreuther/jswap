@@ -1,6 +1,7 @@
 package de.eleon.watchcopy;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Main class to start WatchCopy from commandline.
@@ -15,19 +16,20 @@ public class Main {
 
     public static void main(String[] args) {
         Log.LOG("init");
-        String from = System.getProperty("watchcopy.from");
-        String to = System.getProperty("watchcopy.to");
-        if (from == null || from.isEmpty() || to == null || to.isEmpty()) {
-            throw new UnsupportedOperationException("Usage: \n" +
-                    "java -jar <pathTo>/watchcopy-agent.jar \\\n" +
-                    "\t -Dwatchcopy.from=<yourMavenProject>/target/classes \\\n" +
-                    "\t -Dwatchcopy.to=${SERVER}/webapps/ROOT/WEB-INF/classes");
-        }
         try {
-            watchCopy = new WatchCopy(from, to);
+            List<Config> configs = Configs.getConfigsFromSystemProperties("watchcopy");
+            watchCopy = new WatchCopy(configs);
             watchCopy.run(false);
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedOperationException("\nUsage: \n" +
+                    "java -jar <pathTo>/watchcopy-agent.jar \\\n" +
+                    "\t -Dwatchcopy.from[0]=<yourBuildDirectory> \\\n" +
+                    "\t -Dwatchcopy.to[0]=<yourClasspathDirectory>\n", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new UnsupportedOperationException("\nUsage: \n" +
+                    "java -jar <pathTo>/watchcopy-agent.jar \\\n" +
+                    "\t -Dwatchcopy.from[0]=<yourBuildDirectory> \\\n" +
+                    "\t -Dwatchcopy.to[0]=<yourClasspathDirectory>\n", e);
         }
     }
 

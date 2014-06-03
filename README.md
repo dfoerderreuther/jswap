@@ -28,7 +28,7 @@ The agent-jar will be target/watchcopy-agent.jar
         -javaagent:<pathTo>/springloaded-{VERSION}.jar -noverify SomeJavaClass
 
 
-# Running with Spring Loaded and tomcat, copy classes and resources
+# Running with Spring Loaded and tomcat, synchronize classes and resources
 
     SERVER=<pathTo>/server/apache-tomcat
 
@@ -42,7 +42,7 @@ The agent-jar will be target/watchcopy-agent.jar
 	        -Dwatchcopy.from[0]=<yourMavenProject>/target/classes \
 	        -Dwatchcopy.to[0]=${SERVER}/webapps/ROOT/WEB-INF/classes \
             -Dwatchcopy.from[1]=<yourMavenProject>/src/main/webapps \
-            -Dwatchcopy.to[1]=${SERVER}/webapps/ROOT""
+            -Dwatchcopy.to[1]=${SERVER}/webapps/ROOT"
 
 	# SpringLoaded
 	export JAVA_OPTS="$JAVA_OPTS -javaagent:<pathTo>/springloaded-1.2.0.RELEASE.jar"

@@ -27,8 +27,6 @@ public class WatchCopy {
     private final WatchEventProcessor watchEventProcessor;
     private ScheduledExecutorService executor;
 
-    private final List<Config> configs;
-
     private final Map<WatchKey, Config> watchKeyConfigMap = Maps.newHashMap();
 
     /**
@@ -39,7 +37,6 @@ public class WatchCopy {
      */
     public WatchCopy(List<Config> configs) throws IOException {
         LOG("START: configs %s", Joiner.on(", ").join(configs).toString());
-        this.configs = configs;
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchEventProcessor = new WatchEventProcessor();
 
@@ -51,6 +48,7 @@ public class WatchCopy {
 
     /**
      * Run watch process in an endless thread.
+     *
      * @param daemon boolean if new thread should be a daemon
      */
     public void run(final boolean daemon) {
@@ -91,18 +89,36 @@ public class WatchCopy {
         }
     }
 
+    /**
+     * Walk through directories and register directories and files
+     *
+     * @param config Config to register
+     * @throws IOException
+     */
     private void registerAll(final Config config) throws IOException {
         Files.walkFileTree(config.getFrom(), new SimpleFileVisitor<Path>() {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
-            {
-                register(dir, config);
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                registerDirectory(dir, config);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                registerFile(file, config);
                 return FileVisitResult.CONTINUE;
             }
         });
     }
 
-    private void register(Path path, Config config) throws IOException {
+    /**
+     * Register watchkey for this directory
+     *
+     * @param path Path to directory
+     * @param config Config
+     * @throws IOException
+     */
+    private void registerDirectory(Path path, Config config) throws IOException {
         WatchKey watchKey = path.register(
                 watchService,
                 ENTRY_CREATE,
@@ -112,13 +128,33 @@ public class WatchCopy {
         watchKeyConfigMap.put(watchKey, config);
     }
 
+    /**
+     * Initial copy file to classpath to enable hot deployment
+     *
+     * @param file Path of file
+     * @param config Config
+     * @throws IOException
+     */
+    private void registerFile(Path file, Config config) throws IOException {
+        Path to = Paths.get(config.getTo().toString(), file.toString().substring(config.getFrom().toString().length()));
+        Files.createDirectories(to.getParent());
+        Files.copy(file, to, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /**
+     * Register new created directories after initialization phase
+     *
+     * @param watchKey WatchKey which has found the new directory
+     * @param event the releasing WatchEvent
+     * @param config Config
+     */
     private void processNewDirectories(WatchKey watchKey, WatchEvent event, Config config) {
         if (event.kind().equals(ENTRY_CREATE)) {
             Path createdEntry = Paths.get(((Path) watchKey.watchable()).toString() + "/" + ((Path) event.context()).toString());
             if (Files.isDirectory(createdEntry)) {
                 try {
                     LOG("register new directory %s", createdEntry);
-                    register(createdEntry, config);
+                    registerDirectory(createdEntry, config);
                 } catch (IOException e) {
                     ERROR("ERROR, cant register new directory %s, %s", createdEntry, e.toString());
                 }
@@ -126,10 +162,18 @@ public class WatchCopy {
         }
     }
 
+    /**
+     * ThreadExecutor status
+     *
+     * @return true if running
+     */
     public boolean active() {
         return executor != null && !executor.isTerminated();
     }
 
+    /**
+     * Stop the ThreadExecutor
+     */
     public void stop() {
         if (executor == null) return;
         executor.shutdown();

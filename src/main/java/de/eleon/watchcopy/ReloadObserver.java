@@ -15,34 +15,17 @@
 */
 package de.eleon.watchcopy;
 
-import com.google.common.base.Objects;
+import org.springsource.loaded.ReloadEventProcessorPlugin;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+public class ReloadObserver implements ReloadEventProcessorPlugin {
 
-public class Config {
-
-    private final Path from;
-    private final Path to;
-
-    public Config(String from, String to, String ignore) {
-        this.from = Paths.get(from);
-        this.to = Paths.get(to);
-    }
-
-    public Path getFrom() {
-        return from;
-    }
-
-    public Path getTo() {
-        return to;
+    @Override
+    public boolean shouldRerunStaticInitializer(String typename, Class<?> clazz, String encodedTimestamp) {
+        return false;
     }
 
     @Override
-    public String toString() {
-        return Objects.toStringHelper(Config.class)
-                .add("from", from.toString())
-                .add("to", to.toString())
-                .toString();
+    public void reloadEvent(String typename, Class<?> clazz, String encodedTimestamp) {
+        Log.LOG("reload class %s", clazz.toString());
     }
 }

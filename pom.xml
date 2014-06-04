@@ -13,7 +13,21 @@
         <url>scm:git:https://github.com/dfoerderreuther/watchcopy.git</url>
         <developerConnection>scm:git:https://github.com/dfoerderreuther/watchcopy.git</developerConnection>
         <tag>HEAD</tag>
-  </scm>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <contributors>
+        <contributor>
+            <name>Dominik Foerderreuther</name>
+            <email>dominik@eleon.de</email>
+        </contributor>
+    </contributors>
 
     <build>
         <finalName>watchcopy</finalName>
@@ -97,6 +111,11 @@
             <artifactId>mockito-all</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>springloaded</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -127,6 +146,12 @@
                 <artifactId>mockito-all</artifactId>
                 <version>1.9.5</version>
                 <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>springloaded</artifactId>
+                <version>1.2.0.RELEASE</version>
             </dependency>
 
         </dependencies>

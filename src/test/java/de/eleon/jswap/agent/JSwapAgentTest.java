@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package de.eleon.watchcopy.agent;
+package de.eleon.jswap.agent;
 
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -28,12 +28,12 @@ import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Path;
 
-import static de.eleon.watchcopy.test.Util.dropCreate;
+import static de.eleon.jswap.test.Util.dropCreate;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WatchCopyAgentTest extends TestCase {
+public class JSwapAgentTest extends TestCase {
 
     @Mock
     Instrumentation instrumentation;
@@ -49,47 +49,47 @@ public class WatchCopyAgentTest extends TestCase {
         System.out.println("setUp");
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
-        WatchCopyAgent.instrumentation = null;
-        WatchCopyAgent.watchCopy = null;
-        System.setProperty("watchcopy.from[0]", "");
-        System.setProperty("watchcopy.to[0]", "");
+        JSwapAgent.instrumentation = null;
+        JSwapAgent.JSwap = null;
+        System.setProperty("jswap.from[0]", "");
+        System.setProperty("jswap.to[0]", "");
     }
 
     @Test
     public void shouldNotStartWithoutParams() throws Exception {
         thrown.expect(UnsupportedOperationException.class);
-        WatchCopyAgent.premain("", instrumentation);
+        JSwapAgent.premain("", instrumentation);
     }
 
     @Test
     public void shouldStartWithPremain() throws Exception {
-        System.setProperty("watchcopy.from[0]", baseFrom.toString());
-        System.setProperty("watchcopy.to[0]", baseTo.toString());
+        System.setProperty("jswap.from[0]", baseFrom.toString());
+        System.setProperty("jswap.to[0]", baseTo.toString());
 
-        WatchCopyAgent.premain("", instrumentation);
-        assertTrue(WatchCopyAgent.watchCopy.active());
+        JSwapAgent.premain("", instrumentation);
+        assertTrue(JSwapAgent.JSwap.active());
 
-        WatchCopyAgent.watchCopy.stop();
+        JSwapAgent.JSwap.stop();
     }
 
     @Test
     public void shouldStartWithAgentmain() throws Exception {
-        System.setProperty("watchcopy.from[0]", baseFrom.toString());
-        System.setProperty("watchcopy.to[0]", baseTo.toString());
+        System.setProperty("jswap.from[0]", baseFrom.toString());
+        System.setProperty("jswap.to[0]", baseTo.toString());
 
-        WatchCopyAgent.agentmain("", instrumentation);
-        assertTrue(WatchCopyAgent.watchCopy.active());
+        JSwapAgent.agentmain("", instrumentation);
+        assertTrue(JSwapAgent.JSwap.active());
 
-        WatchCopyAgent.watchCopy.stop();
+        JSwapAgent.JSwap.stop();
     }
 
     @Test
     public void shouldSetInstrumentation() throws Exception {
-        System.setProperty("watchcopy.from[0]", baseFrom.toString());
-        System.setProperty("watchcopy.to[0]", baseTo.toString());
+        System.setProperty("jswap.from[0]", baseFrom.toString());
+        System.setProperty("jswap.to[0]", baseTo.toString());
 
-        WatchCopyAgent.agentmain("", instrumentation);
-        assertThat(WatchCopyAgent.getInstrumentation(), is(instrumentation));
+        JSwapAgent.agentmain("", instrumentation);
+        assertThat(JSwapAgent.getInstrumentation(), is(instrumentation));
     }
 
 }

@@ -13,9 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package de.eleon.watchcopy.agent;
+package de.eleon.jswap.agent;
 
-import de.eleon.watchcopy.*;
+import de.eleon.jswap.*;
 import org.springsource.loaded.agent.ClassPreProcessorAgentAdapter;
 import org.springsource.loaded.agent.SpringLoadedPreProcessor;
 
@@ -27,10 +27,10 @@ import java.util.List;
 /**
  * JVM Agent to init WatchCopy inside a running JVM
  */
-public class WatchCopyAgent {
+public class JSwapAgent {
 
     protected static Instrumentation instrumentation;
-    protected static WatchCopy watchCopy;
+    protected static JSwap JSwap;
 
     private static ClassFileTransformer transformer = new ClassPreProcessorAgentAdapter();
 
@@ -39,34 +39,34 @@ public class WatchCopyAgent {
     }
 
     public static void agentmain(String args, Instrumentation instrumentation) throws Exception {
-        if (WatchCopyAgent.instrumentation != null) {
+        if (JSwapAgent.instrumentation != null) {
             return;
         }
-        WatchCopyAgent.instrumentation = instrumentation;
+        JSwapAgent.instrumentation = instrumentation;
 
-        startWatchCopy();
+        start();
 
-        WatchCopyAgent.instrumentation.addTransformer(transformer);
+        JSwapAgent.instrumentation.addTransformer(transformer);
         SpringLoadedPreProcessor.registerGlobalPlugin(new ReloadObserver());
 
     }
 
-    private static void startWatchCopy() {
+    private static void start() {
         Log.LOG("init");
         try {
-            List<Config> configs = Configs.getConfigsFromSystemProperties("watchcopy");
-            watchCopy = new WatchCopy(configs);
-            watchCopy.run(true);
+            List<Config> configs = Configs.getConfigsFromSystemProperties("jswap");
+            JSwap = new JSwap(configs);
+            JSwap.run(true);
         } catch (IllegalArgumentException e) {
             throw new UnsupportedOperationException("\nJVM was not started with \n" +
-                    "<pathTo>/watchcopy-agent.jar \\\n" +
-                    "\t -Dwatchcopy.from[0]=<yourBuildDirectory> \\\n" +
-                    "\t -Dwatchcopy.to[0]=<yourClasspathDirectory>\n", e);
+                    "<pathTo>/jswap-agent.jar \\\n" +
+                    "\t -Djswap.from[0]=<yourBuildDirectory> \\\n" +
+                    "\t -Djswap.to[0]=<yourClasspathDirectory>\n", e);
         } catch (IOException e) {
             throw new UnsupportedOperationException("\nJVM was not started with \n" +
-                    "<pathTo>/watchcopy-agent.jar \\\n" +
-                    "\t -Dwatchcopy.from[0]=<yourBuildDirectory> \\\n" +
-                    "\t -Dwatchcopy.to[0]=<yourClasspathDirectory>\n", e);
+                    "<pathTo>/jswap-agent.jar \\\n" +
+                    "\t -Djswap.from[0]=<yourBuildDirectory> \\\n" +
+                    "\t -Djswap.to[0]=<yourClasspathDirectory>\n", e);
         }
     }
 

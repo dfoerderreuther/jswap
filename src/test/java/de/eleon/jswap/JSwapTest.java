@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package de.eleon.watchcopy;
+package de.eleon.jswap;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
@@ -24,11 +24,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static de.eleon.watchcopy.test.Util.dropCreate;
+import static de.eleon.jswap.test.Util.dropCreate;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-public class WatchCopyTest {
+public class JSwapTest {
 
     Path baseFrom;
     Path baseTo;
@@ -51,7 +51,7 @@ public class WatchCopyTest {
         Files.createDirectories(testFile.getParent());
         Files.createFile(testFile);
 
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
 
         assertTrue(String.format("directory \"%s\" should be created", resultFile.getParent().toString()), resultFile.getParent().toFile().exists());
@@ -60,17 +60,17 @@ public class WatchCopyTest {
 
     @Test
     public void shouldCopyFile() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
-        watchCopy.watch();
+        JSwap.watch();
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
     }
 
     @Test
     public void shouldCopyDirectory() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
-        watchCopy.watch();
+        JSwap.watch();
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir")));
     }
 
@@ -78,35 +78,35 @@ public class WatchCopyTest {
     public void shouldCopyFileFromSubdir() throws IOException {
         Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
         Files.createDirectory(Paths.get(baseTo.toString() + "/dir"));
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         Files.createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
-        watchCopy.watch();
+        JSwap.watch();
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir/test.txt")));
     }
 
     @Test(timeout=1000)
     public void shouldCopyFileFromNewSubdir() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
-        watchCopy.watch();
+        JSwap.watch();
 
         Files.createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
-        watchCopy.watch();
+        JSwap.watch();
 
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir/test.txt")));
     }
 
     @Test
     public void shoulcCopyChangedFile() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Path fileFrom = Paths.get(baseFrom.toString() + "/test.txt");
         Files.createFile(fileFrom);
-        watchCopy.watch();
+        JSwap.watch();
 
         Files.write(fileFrom, "test".getBytes());
-        watchCopy.watch();
+        JSwap.watch();
 
         Path fileTo = Paths.get(baseFrom.toString() + "/test.txt");
         assertThat(new String(Files.readAllBytes(fileTo)), is("test"));
@@ -114,35 +114,35 @@ public class WatchCopyTest {
 
     @Test
     public void shouldDeleteFile() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Path fileFrom = Paths.get(baseFrom.toString() + "/test.txt");
         Files.createFile(fileFrom);
-        watchCopy.watch();
+        JSwap.watch();
 
         Path fileTo = Paths.get(baseTo.toString() + "/test.txt");
         assertTrue(Files.exists(fileTo));
 
         Files.delete(fileFrom);
-        watchCopy.watch();
+        JSwap.watch();
 
         assertFalse(Files.exists(fileTo));
     }
 
     @Test
     public void shouldWorkWithTwoConfigs() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(
+        JSwap JSwap = new JSwap(
                 ImmutableList.<Config>builder()
                         .add(new Config(baseFrom.toString(), baseTo.toString(), ""))
                         .add(new Config(baseFromB.toString(), baseToB.toString(), ""))
                         .build());
 
         Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
-        watchCopy.watch();
+        JSwap.watch();
         assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
 
         Files.createFile(Paths.get(baseFromB.toString() + "/test.txt"));
-        watchCopy.watch();
+        JSwap.watch();
         assertTrue(Files.exists(Paths.get(baseToB.toString() + "/test.txt")));
     }
 
@@ -150,17 +150,17 @@ public class WatchCopyTest {
     //@Ignore // don't know why
     //@Test
     public void shouldDeleteDirectory() throws IOException {
-        WatchCopy watchCopy = new WatchCopy(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        JSwap JSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
         Path dirFrom = Paths.get(baseFrom.toString() + "/dir");
         Files.createDirectory(dirFrom);
-        watchCopy.watch();
+        JSwap.watch();
 
         Path dirTo = Paths.get(baseTo.toString() + "/dir");
         assertTrue(Files.exists(dirTo));
 
         Files.delete(dirFrom);
-        watchCopy.watch();
+        JSwap.watch();
 
         assertFalse(Files.exists(dirTo));
     }

@@ -13,19 +13,25 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package de.eleon.watchcopy;
+package de.eleon.jswap;
 
-import org.springsource.loaded.ReloadEventProcessorPlugin;
+import java.util.Date;
 
-public class ReloadObserver implements ReloadEventProcessorPlugin {
+/**
+ * Dumb logging class
+ */
+public class Log {
 
-    @Override
-    public boolean shouldRerunStaticInitializer(String typename, Class<?> clazz, String encodedTimestamp) {
-        return false;
+    public static void LOG(String message, Object... args) {
+        System.out.printf("JSwap - %s: %s\n", new Date(), String.format(message, args));
     }
 
-    @Override
-    public void reloadEvent(String typename, Class<?> clazz, String encodedTimestamp) {
-        Log.LOG("reload class %s", clazz.toString());
+    public static void ERROR(String message, Object... args) {
+        System.err.printf("JSwap - %s: %s\n", new Date(), String.format(message, args));
     }
+
+    public static void ERROR(Throwable e, String message, Object... args) {
+        System.err.printf("JSwap - %s: %s\n%s\n", new Date(), String.format(message, args), e.fillInStackTrace());
+    }
+
 }

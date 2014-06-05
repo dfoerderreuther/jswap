@@ -1,9 +1,9 @@
-# Welcome to WatchCopy
+# Welcome to JSwap
 
-## What is WatchCopy?
+## What is JSwap?
 
-WatchCopy is a JVM agent for synchronizing your IDEs or Mavens bin directory with the classpath of a running JVM. It uses 
-Spring Loaded (https://github.com/spring-projects/spring-loaded/) for reloading changed classes during runtime. 
+JSwap is a JVM agent for synchronizing your IDEs or Mavens bin directory with the classpath of a running JVM. It uses 
+Spring Loaded for reloading changed classes during runtime. 
 
 # Installation
 
@@ -11,15 +11,15 @@ Download the source and build it with maven.
 
     mvn clean install
     
-The agent-jar will be target/watchcopy-agent.jar
+The agent-jar will be target/jswap-agent.jar
     
 # Running 
 
 ## Simple example of running with a single source and a single target folder
 
-    java -javaagent:<pathTo>/watchcopy-agent.jar \
-        -Dwatchcopy.from[0]=<pathOfYourIDEsBinDirectory> \
-        -Dwatchcopy.to[0]=<pathOfYourClasspathDirectory>
+    java -javaagent:<pathTo>/jswap-agent.jar \
+        -Djswap.from[0]=<pathOfYourIDEsBinDirectory> \
+        -Djswap.to[0]=<pathOfYourClasspathDirectory>
         ... SomeJavaClass
         
 ## Example of running with Tomcat, synchronize classes of two modules and static resources
@@ -30,21 +30,21 @@ The agent-jar will be target/watchcopy-agent.jar
 	        -Dcom.sun.management.jmxremote \
 	        -noverify"
 
-	# WatchCopy
-	export JAVA_OPTS="$JAVA_OPTS -javaagent:<pathTo>/watchcopy-agent.jar \
-	        -Dwatchcopy.from[0]=<yourMavenProject>/target/classes \
-	        -Dwatchcopy.to[0]=${SERVER}/webapps/ROOT/WEB-INF/classes \
-            -Dwatchcopy.from[1]=<anotherModul>/target/classes \
-            -Dwatchcopy.to[1]=${SERVER}/webapps/ROOT/WEB-INF/classes \
-            -Dwatchcopy.from[2]=<yourMavenProject>/src/main/webapps \
-            -Dwatchcopy.to[2]=${SERVER}/webapps/ROOT"
+	# JSwap
+	export JAVA_OPTS="$JAVA_OPTS -javaagent:<pathTo>/jswap-agent.jar \
+	        -Djswap.from[0]=<yourMavenProject>/target/classes \
+	        -Djswap.to[0]=${SERVER}/webapps/ROOT/WEB-INF/classes \
+            -Djswap.from[1]=<anotherModul>/target/classes \
+            -Djswap.to[1]=${SERVER}/webapps/ROOT/WEB-INF/classes \
+            -Djswap.from[2]=<yourMavenProject>/src/main/webapps \
+            -Djswap.to[2]=${SERVER}/webapps/ROOT"
 
 	$SERVER/bin/catalina.sh jpda start
 
 
-# Used Components
+# External Libraries
 
-WatchCopy uses for compile, run and test: 
+JSwap uses for compile, run and test: 
 
 * Guava (Apache License, Version 2.0)
 * SpringLoaded (Apache License, Version 2.0)

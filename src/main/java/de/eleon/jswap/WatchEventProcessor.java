@@ -13,12 +13,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package de.eleon.watchcopy;
+package de.eleon.jswap;
 
 import java.io.IOException;
 import java.nio.file.*;
 
-import static de.eleon.watchcopy.Log.LOG;
+import static de.eleon.jswap.Log.LOG;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
@@ -30,7 +30,7 @@ class WatchEventProcessor {
 
     /**
      * Process a change event
-     *  @param watchKey WatchKey which has detected the change
+     * @param watchKey WatchKey which has detected the change
      * @param event the published WatchEvent
      * @param config
      */

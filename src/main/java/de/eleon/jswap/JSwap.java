@@ -1,4 +1,4 @@
-package de.eleon.watchcopy;
+package de.eleon.jswap;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
@@ -13,15 +13,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import static de.eleon.watchcopy.Log.ERROR;
-import static de.eleon.watchcopy.Log.LOG;
+import static de.eleon.jswap.Log.ERROR;
+import static de.eleon.jswap.Log.LOG;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
  * Opens a {link WatchService} and watches a directory with its subdirectories for changes. Detected changes will be
  * processed by {link WatchEventProcessor}. New directories will also be registered within the watchservice.
  */
-public class WatchCopy {
+public class JSwap {
 
     private final WatchService watchService;
     private final WatchEventProcessor watchEventProcessor;
@@ -35,7 +35,7 @@ public class WatchCopy {
      * @param configs List of watch configs
      * @throws IOException
      */
-    public WatchCopy(List<Config> configs) throws IOException {
+    public JSwap(List<Config> configs) throws IOException {
         LOG("START: configs %s", Joiner.on(", ").join(configs).toString());
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchEventProcessor = new WatchEventProcessor();

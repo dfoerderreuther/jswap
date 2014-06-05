@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package de.eleon.watchcopy;
+package de.eleon.jswap;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;

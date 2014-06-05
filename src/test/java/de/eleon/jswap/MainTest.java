@@ -1,4 +1,4 @@
-package de.eleon.watchcopy;
+package de.eleon.jswap;
 
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Path;
 
-import static de.eleon.watchcopy.test.Util.dropCreate;
+import static de.eleon.jswap.test.Util.dropCreate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MainTest extends TestCase {
@@ -32,8 +32,8 @@ public class MainTest extends TestCase {
         System.out.println("setUp");
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
-        System.setProperty("watchcopy.from[0]", "");
-        System.setProperty("watchcopy.to[0]", "");
+        System.setProperty("jswap.from[0]", "");
+        System.setProperty("jswap.to[0]", "");
     }
 
     @Test
@@ -44,12 +44,12 @@ public class MainTest extends TestCase {
 
     @Test
     public void shouldStartWithMain() throws Exception {
-        System.setProperty("watchcopy.from[0]", baseFrom.toString());
-        System.setProperty("watchcopy.to[0]", baseTo.toString());
+        System.setProperty("jswap.from[0]", baseFrom.toString());
+        System.setProperty("jswap.to[0]", baseTo.toString());
 
         Main.main(new String[]{});
-        assertTrue(Main.watchCopy.active());
+        assertTrue(Main.JSwap.active());
 
-        Main.watchCopy.stop();
+        Main.JSwap.stop();
     }
 }

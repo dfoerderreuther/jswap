@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.eleon</groupId>
-    <artifactId>watchcopy</artifactId>
+    <artifactId>jswap</artifactId>
     <version>1.1-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
     <scm>
-        <connection>scm:git:https://github.com/dfoerderreuther/watchcopy.git</connection>
-        <url>scm:git:https://github.com/dfoerderreuther/watchcopy.git</url>
-        <developerConnection>scm:git:https://github.com/dfoerderreuther/watchcopy.git</developerConnection>
+        <connection>scm:git:https://github.com/dfoerderreuther/jswap.git</connection>
+        <url>scm:git:https://github.com/dfoerderreuther/jswap.git</url>
+        <developerConnection>scm:git:https://github.com/dfoerderreuther/jswap.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -30,7 +30,7 @@
     </contributors>
 
     <build>
-        <finalName>watchcopy</finalName>
+        <finalName>jswap</finalName>
         <plugins>
 
             <plugin>
@@ -48,17 +48,17 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>de.eleon.watchcopy.Main</mainClass>
+                                    <mainClass>de.eleon.jswap.Main</mainClass>
                                 </manifest>
                                 <manifestEntries>
-                                    <Premain-Class>de.eleon.watchcopy.agent.WatchCopyAgent</Premain-Class>
-                                    <Agent-Class>de.eleon.watchcopy.agent.WatchCopyAgent</Agent-Class>
-                                    <Main-Class>de.eleon.watchcopy.Main</Main-Class>
+                                    <Premain-Class>de.eleon.jswap.agent.JSwapAgent</Premain-Class>
+                                    <Agent-Class>de.eleon.jswap.agent.JSwapAgent</Agent-Class>
+                                    <Main-Class>de.eleon.jswap.Main</Main-Class>
                                     <Can-Redefine-Classes>false</Can-Redefine-Classes>
                                     <Can-Retransform-Classes>false</Can-Retransform-Classes>
                                 </manifestEntries>
                             </archive>
-                            <finalName>watchcopy-agent</finalName>
+                            <finalName>jswap-agent</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>

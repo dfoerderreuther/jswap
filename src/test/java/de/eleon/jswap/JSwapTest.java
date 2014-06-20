@@ -63,9 +63,9 @@ public class JSwapTest {
     @Test
     public void shouldCopyFile() throws IOException {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
-        createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        createFile(Paths.get(baseFrom.toString(), "/test.txt"));
         jSwap.watch();
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
+        assertTrue(Files.exists(Paths.get(baseTo.toString(),  "/test.txt")));
     }
 
     @Test
@@ -77,54 +77,54 @@ public class JSwapTest {
         jSwap.watch();
         jSwap.init();
 
-        createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        createFile(Paths.get(baseFrom.toString(), "/test.txt"));
         jSwap.watch();
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
+        assertTrue(Files.exists(Paths.get(baseTo.toString(), "/test.txt")));
     }
 
     @Test
     public void shouldCopyDirectory() throws IOException {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
-        createDirectory(Paths.get(baseFrom.toString() + "/dir"));
+        createDirectory(Paths.get(baseFrom.toString(), "/dir"));
         jSwap.watch();
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir")));
+        assertTrue(Files.exists(Paths.get(baseTo.toString(), "/dir")));
     }
 
     @Test
     public void shouldCopyFileFromSubdir() throws IOException {
-        createDirectory(Paths.get(baseFrom.toString() + "/dir"));
-        createDirectory(Paths.get(baseTo.toString() + "/dir"));
+        createDirectory(Paths.get(baseFrom.toString(), "/dir"));
+        createDirectory(Paths.get(baseTo.toString(), "/dir"));
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
-        createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
+        createFile(Paths.get(baseFrom.toString(), "/dir/test.txt"));
         jSwap.watch();
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir/test.txt")));
+        assertTrue(Files.exists(Paths.get(baseTo.toString(), "/dir/test.txt")));
     }
 
     @Test(timeout=1000)
     public void shouldCopyFileFromNewSubdir() throws IOException {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
-        createDirectory(Paths.get(baseFrom.toString() + "/dir"));
+        createDirectory(Paths.get(baseFrom.toString(), "/dir"));
         jSwap.watch();
 
-        createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
+        createFile(Paths.get(baseFrom.toString(), "/dir/test.txt"));
         jSwap.watch();
 
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir/test.txt")));
+        assertTrue(Files.exists(Paths.get(baseTo.toString(), "/dir/test.txt")));
     }
 
     @Test
     public void shoulcCopyChangedFile() throws IOException {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
-        Path fileFrom = Paths.get(baseFrom.toString() + "/test.txt");
+        Path fileFrom = Paths.get(baseFrom.toString(), "/test.txt");
         createFile(fileFrom);
         jSwap.watch();
 
         Files.write(fileFrom, "test".getBytes());
         jSwap.watch();
 
-        Path fileTo = Paths.get(baseFrom.toString() + "/test.txt");
+        Path fileTo = Paths.get(baseFrom.toString(), "/test.txt");
         assertThat(new String(Files.readAllBytes(fileTo)), is("test"));
     }
 
@@ -133,11 +133,11 @@ public class JSwapTest {
         System.setProperty("jswap.delete", "false");
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
-        Path fileFrom = Paths.get(baseFrom.toString() + "/test.txt");
+        Path fileFrom = Paths.get(baseFrom.toString(), "/test.txt");
         createFile(fileFrom);
         jSwap.watch();
 
-        Path fileTo = Paths.get(baseTo.toString() + "/test.txt");
+        Path fileTo = Paths.get(baseTo.toString(), "/test.txt");
         assertTrue(Files.exists(fileTo));
 
         Files.delete(fileFrom);
@@ -151,11 +151,11 @@ public class JSwapTest {
         System.setProperty("jswap.delete", "true");
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
-        Path fileFrom = Paths.get(baseFrom.toString() + "/test.txt");
+        Path fileFrom = Paths.get(baseFrom.toString(), "/test.txt");
         createFile(fileFrom);
         jSwap.watch();
 
-        Path fileTo = Paths.get(baseTo.toString() + "/test.txt");
+        Path fileTo = Paths.get(baseTo.toString(), "/test.txt");
         assertTrue(Files.exists(fileTo));
 
         Files.delete(fileFrom);
@@ -172,13 +172,13 @@ public class JSwapTest {
                         .add(new Config(baseFromB.toString(), baseToB.toString(), ""))
                         .build());
 
-        createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        createFile(Paths.get(baseFrom.toString(), "/test.txt"));
         jSwap.watch();
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
+        assertTrue(Files.exists(Paths.get(baseTo.toString(), "/test.txt")));
 
-        createFile(Paths.get(baseFromB.toString() + "/test.txt"));
+        createFile(Paths.get(baseFromB.toString(), "/test.txt"));
         jSwap.watch();
-        assertTrue(Files.exists(Paths.get(baseToB.toString() + "/test.txt")));
+        assertTrue(Files.exists(Paths.get(baseToB.toString(), "/test.txt")));
     }
 
 
@@ -187,11 +187,11 @@ public class JSwapTest {
     public void shouldDeleteDirectory() throws IOException {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
 
-        Path dirFrom = Paths.get(baseFrom.toString() + "/dir");
+        Path dirFrom = Paths.get(baseFrom.toString(), "/dir");
         createDirectory(dirFrom);
         jSwap.watch();
 
-        Path dirTo = Paths.get(baseTo.toString() + "/dir");
+        Path dirTo = Paths.get(baseTo.toString(), "/dir");
         assertTrue(Files.exists(dirTo));
 
         Files.delete(dirFrom);
@@ -199,7 +199,5 @@ public class JSwapTest {
 
         assertFalse(Files.exists(dirTo));
     }
-
-
 
 }

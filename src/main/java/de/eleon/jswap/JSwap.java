@@ -106,7 +106,6 @@ public class JSwap {
                 LOG("watch key no longer valid");
             }
 
-            //init();
         } catch (InterruptedException e) {
             ERROR(e, "interrupted");
         }

@@ -38,10 +38,10 @@ public class JSwapThreadTest {
     public void shouldCopyFile() throws Exception {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         jSwap.run(true);
-        createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        createFile(Paths.get(baseFrom.toString(), "/test.txt"));
 
         await("copy process")
-                .until(fileExists(Paths.get(baseTo.toString() + "/test.txt")));
+                .until(fileExists(Paths.get(baseTo.toString(), "/test.txt")));
     }
 
     @Test
@@ -52,10 +52,10 @@ public class JSwapThreadTest {
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
 
-        createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        createFile(Paths.get(baseFrom.toString(), "/test.txt"));
 
         await("copy process")
-                .until(fileExists(Paths.get(baseTo.toString() + "/test.txt")));
+                .until(fileExists(Paths.get(baseTo.toString(), "/test.txt")));
     }
 
     @Test
@@ -63,11 +63,11 @@ public class JSwapThreadTest {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         jSwap.run(true);
 
-        createDirectory(Paths.get(baseFrom.toString() + "/dir"));
-        createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
+        createDirectory(Paths.get(baseFrom.toString(), "/dir"));
+        createFile(Paths.get(baseFrom.toString(), "/dir/test.txt"));
 
         await("copy process")
-                .until(fileExists(Paths.get(baseTo.toString() + "/dir/test.txt")));
+                .until(fileExists(Paths.get(baseTo.toString(), "/dir/test.txt")));
     }
 
     private Callable<Boolean> fileExists(final Path path) {

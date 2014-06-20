@@ -75,7 +75,7 @@ public class JSwapTest {
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
         jSwap.watch();
-        jSwap.init();
+        jSwap.init(false);
 
         createFile(Paths.get(baseFrom.toString(), "/test.txt"));
         jSwap.watch();

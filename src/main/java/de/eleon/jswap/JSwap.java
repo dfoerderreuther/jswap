@@ -8,10 +8,16 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import static de.eleon.jswap.Log.ERROR;
 import static de.eleon.jswap.Log.LOG;
+import static java.nio.file.Files.copy;
+import static java.nio.file.Files.createDirectories;
+import static java.nio.file.Files.isDirectory;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
@@ -28,6 +34,13 @@ public class JSwap {
 
     private final Map<WatchKey, Config> watchKeyConfigMap = Maps.newHashMap();
 
+    private final Map<String, WatchKey> pathWatchkeys = Maps.newHashMap();
+
+    //private List<Config> initialized = Lists.newArrayList();
+
+
+
+
     /**
      * Constructor
      *
@@ -40,7 +53,7 @@ public class JSwap {
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchEventProcessor = new WatchEventProcessor();
 
-        init();
+        init(true);
     }
 
     /**
@@ -53,9 +66,9 @@ public class JSwap {
         initExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                init();
+                init(false);
             }
-        }, 1000, 1000, TimeUnit.MILLISECONDS);
+        }, 1, 1, TimeUnit.SECONDS);
 
         watchExecutor = Executors.newSingleThreadScheduledExecutor(getThreadFactory(daemon));
         watchExecutor.scheduleWithFixedDelay(new Runnable() {
@@ -78,13 +91,18 @@ public class JSwap {
     }
 
 
-    public void init() {
+    public void init(boolean startup) {
         for (Config config : configs) {
-            try {
-                registerAll(config);
-            } catch (IOException e) {
-                Log.ERROR(e, "error during config registration %s", config);
-            }
+            initialize(config, startup);
+        }
+    }
+
+
+    private void initialize(Config config, boolean startup) {
+        try {
+            registerAll(config, startup);
+        } catch (IOException e) {
+            Log.ERROR(e, "error during config registration %s", config);
         }
     }
 
@@ -117,7 +135,7 @@ public class JSwap {
      * @param config Config to register
      * @throws IOException
      */
-    private void registerAll(final Config config) throws IOException {
+    private void registerAll(final Config config, final boolean startup) throws IOException {
         Files.walkFileTree(config.getFrom(), new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -127,7 +145,7 @@ public class JSwap {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                registerFile(file, config);
+                registerFile(file, config, startup);
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -141,12 +159,19 @@ public class JSwap {
      * @throws IOException
      */
     private void registerDirectory(Path path, Config config) throws IOException {
+        if (pathWatchkeys.containsKey(path.toString()) && pathWatchkeys.get(path.toString()).isValid()) {
+            return;
+        }
+        if (pathWatchkeys.containsKey(path.toString())) {
+            pathWatchkeys.remove(path.toString());
+        }
         WatchKey watchKey = path.register(
                 watchService,
                 ENTRY_CREATE,
                 ENTRY_DELETE,
                 ENTRY_MODIFY
         );
+        pathWatchkeys.put(path.toString(), watchKey);
         watchKeyConfigMap.put(watchKey, config);
     }
 
@@ -157,10 +182,12 @@ public class JSwap {
      * @param config Config
      * @throws IOException
      */
-    private void registerFile(Path file, Config config) throws IOException {
+    private void registerFile(Path file, Config config, boolean startup) throws IOException {
         Path to = Paths.get(config.getTo().toString(), file.toString().substring(config.getFrom().toString().length()));
-        Files.createDirectories(to.getParent());
-        Files.copy(file, to, StandardCopyOption.REPLACE_EXISTING);
+        createDirectories(to.getParent());
+        if (startup || !Files.exists(to)) {
+            copy(file, to, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /**
@@ -173,7 +200,7 @@ public class JSwap {
     private void processNewDirectories(WatchKey watchKey, WatchEvent event, Config config) {
         if (event.kind().equals(ENTRY_CREATE)) {
             Path createdEntry = Paths.get(((Path) watchKey.watchable()).toString() + "/" + ((Path) event.context()).toString());
-            if (Files.isDirectory(createdEntry)) {
+            if (isDirectory(createdEntry)) {
                 try {
                     LOG("register new directory %s", createdEntry);
                     registerDirectory(createdEntry, config);

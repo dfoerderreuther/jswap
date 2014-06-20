@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -15,9 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static de.eleon.jswap.Log.ERROR;
 import static de.eleon.jswap.Log.LOG;
-import static java.nio.file.Files.copy;
-import static java.nio.file.Files.createDirectories;
-import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.*;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
@@ -185,9 +184,14 @@ public class JSwap {
     private void registerFile(Path file, Config config, boolean startup) throws IOException {
         Path to = Paths.get(config.getTo().toString(), file.toString().substring(config.getFrom().toString().length()));
         createDirectories(to.getParent());
-        if (startup || !Files.exists(to)) {
+        if (startup || !exists(to) || !equals(file, to)) {
             copy(file, to, StandardCopyOption.REPLACE_EXISTING);
         }
+    }
+
+    public static boolean equals(Path a, Path b) throws IOException {
+        return MessageDigest.isEqual(Files.readAllBytes(a), Files.readAllBytes(b));
+        //return  Files.readAllBytes(a).length == (Files.readAllBytes(b).length);
     }
 
     /**

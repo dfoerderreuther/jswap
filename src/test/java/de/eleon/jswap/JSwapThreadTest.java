@@ -1,6 +1,7 @@
 package de.eleon.jswap;
 
 import com.google.common.collect.ImmutableList;
+import com.jayway.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,11 +9,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static de.eleon.jswap.test.Util.dropCreate;
-import static org.junit.Assert.assertTrue;
 
 public class JSwapThreadTest {
 
@@ -21,7 +21,6 @@ public class JSwapThreadTest {
     Path baseFromB;
     Path baseToB;
 
-    CountDownLatch latch;
 
     @Before
     public void setUp() throws IOException {
@@ -31,7 +30,7 @@ public class JSwapThreadTest {
         baseFromB = dropCreate("/tmp/fromB");
         baseToB = dropCreate("/tmp/toB");
 
-        latch = new CountDownLatch(1);
+        Awaitility.reset();
     }
 
     @Test
@@ -39,8 +38,9 @@ public class JSwapThreadTest {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         jSwap.run(true);
         Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
-        latch.await(1, TimeUnit.SECONDS);
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
+
+        await("copy process")
+                .until(fileExists(Paths.get(baseTo.toString() + "/test.txt")));
     }
 
     @Test
@@ -52,20 +52,30 @@ public class JSwapThreadTest {
         baseTo = dropCreate("/tmp/to");
 
         Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
-        latch.await(3, TimeUnit.SECONDS);
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/test.txt")));
+
+        await("copy process")
+                .until(fileExists(Paths.get(baseTo.toString() + "/test.txt")));
     }
 
     @Test
     public void shouldCopyFileFromNewSubdir() throws Exception {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
+        jSwap.run(true);
 
         Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
-
         Files.createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
-        latch.await(1, TimeUnit.SECONDS);
 
-        assertTrue(Files.exists(Paths.get(baseTo.toString() + "/dir/test.txt")));
+        await("copy process")
+                .until(fileExists(Paths.get(baseTo.toString() + "/dir/test.txt")));
+    }
+
+    private Callable<Boolean> fileExists(final Path path) {
+        return new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return Files.exists(path);
+            }
+        };
     }
 
 }

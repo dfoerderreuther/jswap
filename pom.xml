@@ -116,6 +116,11 @@
             <artifactId>springloaded</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.jayway.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -152,6 +157,13 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>springloaded</artifactId>
                 <version>1.2.0.RELEASE</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jayway.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>1.6.0</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>

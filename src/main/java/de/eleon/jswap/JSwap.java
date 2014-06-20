@@ -24,7 +24,7 @@ public class JSwap {
     private final WatchService watchService;
     private final WatchEventProcessor watchEventProcessor;
     private ScheduledExecutorService initExecutor;
-    private ScheduledExecutorService executor;
+    private ScheduledExecutorService watchExecutor;
 
     private final Map<WatchKey, Config> watchKeyConfigMap = Maps.newHashMap();
 
@@ -57,8 +57,8 @@ public class JSwap {
             }
         }, 1000, 1000, TimeUnit.MILLISECONDS);
 
-        executor = Executors.newSingleThreadScheduledExecutor(getThreadFactory(daemon));
-        executor.scheduleWithFixedDelay(new Runnable() {
+        watchExecutor = Executors.newSingleThreadScheduledExecutor(getThreadFactory(daemon));
+        watchExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 watch();
@@ -191,14 +191,14 @@ public class JSwap {
      * @return true if running
      */
     public boolean active() {
-        return executor != null && !executor.isTerminated();
+        return watchExecutor != null && !watchExecutor.isTerminated();
     }
 
     /**
      * Stop the ThreadExecutor
      */
     public void stop() {
-        if (executor == null) return;
-        executor.shutdown();
+        if (watchExecutor == null) return;
+        watchExecutor.shutdown();
     }
 }

@@ -19,7 +19,7 @@ The agent-jar will be target/jswap-agent.jar
 
     java -javaagent:<pathTo>/jswap-agent.jar \
         -Djswap.from[0]=<pathOfYourIDEsBinDirectory> \
-        -Djswap.to[0]=<pathOfYourClasspathDirectory>
+        -Djswap.to[0]=<pathOfYourClasspathDirectory> \
         ... SomeJavaClass
         
 ## Example of running with Tomcat, synchronize classes of two modules and static resources
@@ -40,6 +40,17 @@ The agent-jar will be target/jswap-agent.jar
             -Djswap.to[2]=${SERVER}/webapps/ROOT"
 
 	$SERVER/bin/catalina.sh jpda start
+	
+## Enable deletion
+
+By default jswap doesn't delete file or directories from target directories, even if the 
+sources are missing (e.g. mvn clean). To enable the deletion of target files and directories, 
+add the system property jswap.delete=true (-Djswap.delete=true).
+                                       
+    java -javaagent:<pathTo>/jswap-agent.jar \
+        -Djswap.from... \
+        -Djswap.delete=true \
+        ... SomeJavaClass
 
 
 # External Libraries

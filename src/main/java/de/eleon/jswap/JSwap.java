@@ -8,10 +8,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static de.eleon.jswap.Log.ERROR;
 import static de.eleon.jswap.Log.LOG;
@@ -23,8 +20,10 @@ import static java.nio.file.StandardWatchEventKinds.*;
  */
 public class JSwap {
 
+    private final List<Config> configs;
     private final WatchService watchService;
     private final WatchEventProcessor watchEventProcessor;
+    private ScheduledExecutorService initExecutor;
     private ScheduledExecutorService executor;
 
     private final Map<WatchKey, Config> watchKeyConfigMap = Maps.newHashMap();
@@ -37,35 +36,56 @@ public class JSwap {
      */
     public JSwap(List<Config> configs) throws IOException {
         LOG("START: configs %s", Joiner.on(", ").join(configs).toString());
+        this.configs = configs;
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchEventProcessor = new WatchEventProcessor();
 
-        for (Config config : configs) {
-            registerAll(config);
-        }
-
+        init();
     }
 
     /**
-     * Run watch process in an endless thread.
+     * Run watch process in an endless thread. Reconfigure every second.
      *
-     * @param daemon boolean if new thread should be a daemon
+     * @param daemon boolean if threads should be a daemon
      */
     public void run(final boolean daemon) {
-        executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+        initExecutor = Executors.newSingleThreadScheduledExecutor(getThreadFactory(daemon));
+        initExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setDaemon(daemon);
-                return t;
+            public void run() {
+                init();
             }
-        });
+        }, 1000, 1000, TimeUnit.MILLISECONDS);
+
+        executor = Executors.newSingleThreadScheduledExecutor(getThreadFactory(daemon));
         executor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 watch();
             }
         }, 0, 1, TimeUnit.MILLISECONDS);
+    }
+
+    private ThreadFactory getThreadFactory(final boolean daemon) {
+        return new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setDaemon(daemon);
+                return t;
+            }
+        };
+    }
+
+
+    public void init() {
+        for (Config config : configs) {
+            try {
+                registerAll(config);
+            } catch (IOException e) {
+                Log.ERROR(e, "error during config registration %s", config);
+            }
+        }
     }
 
     /**
@@ -82,8 +102,11 @@ public class JSwap {
                 processNewDirectories(watchKey, event, config);
             }
             if (!watchKey.reset()) {
+                watchKeyConfigMap.remove(watchKey);
                 LOG("watch key no longer valid");
             }
+
+            //init();
         } catch (InterruptedException e) {
             ERROR(e, "interrupted");
         }

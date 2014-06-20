@@ -54,7 +54,11 @@ class WatchEventProcessor {
     }
 
     private void delete(String relativePath, Config config) {
+        if (! System.getProperty("jswap.delete", "false").equalsIgnoreCase("true")) return;
         Path delete = toPath(config.getTo(), relativePath);
+        if (Files.isDirectory(delete)) {
+            return;
+        }
         LOG("delete: %s", delete);
         try {
             Files.delete(delete);

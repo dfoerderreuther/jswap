@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -35,10 +34,6 @@ public class JSwap {
 
     private final Map<String, WatchKey> pathWatchkeys = Maps.newHashMap();
 
-    //private List<Config> initialized = Lists.newArrayList();
-
-
-
 
     /**
      * Constructor
@@ -52,7 +47,7 @@ public class JSwap {
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchEventProcessor = new WatchEventProcessor();
 
-        init(true);
+        init();
     }
 
     /**
@@ -65,7 +60,7 @@ public class JSwap {
         initExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                init(false);
+                init();
             }
         }, 1, 1, TimeUnit.SECONDS);
 
@@ -90,16 +85,16 @@ public class JSwap {
     }
 
 
-    public void init(boolean startup) {
+    public void init() {
         for (Config config : configs) {
-            initialize(config, startup);
+            initialize(config);
         }
     }
 
 
-    private void initialize(Config config, boolean startup) {
+    private void initialize(Config config) {
         try {
-            registerAll(config, startup);
+            registerAll(config);
         } catch (IOException e) {
             Log.ERROR(e, "error during config registration %s", config);
         }
@@ -134,7 +129,7 @@ public class JSwap {
      * @param config Config to register
      * @throws IOException
      */
-    private void registerAll(final Config config, final boolean startup) throws IOException {
+    private void registerAll(final Config config) throws IOException {
         Files.walkFileTree(config.getFrom(), new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -144,7 +139,7 @@ public class JSwap {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                registerFile(file, config, startup);
+                registerFile(file, config);
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -181,17 +176,16 @@ public class JSwap {
      * @param config Config
      * @throws IOException
      */
-    private void registerFile(Path file, Config config, boolean startup) throws IOException {
+    private void registerFile(Path file, Config config) throws IOException {
         Path to = Paths.get(config.getTo().toString(), file.toString().substring(config.getFrom().toString().length()));
         createDirectories(to.getParent());
-        if (startup || !exists(to) || !equals(file, to)) {
-            copy(file, to, StandardCopyOption.REPLACE_EXISTING);
+        if (!exists(to) || !equals(file, to)) {
+            copy(file, to, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
         }
     }
 
     public static boolean equals(Path a, Path b) throws IOException {
-        return MessageDigest.isEqual(Files.readAllBytes(a), Files.readAllBytes(b));
-        //return  Files.readAllBytes(a).length == (Files.readAllBytes(b).length);
+        return Files.getLastModifiedTime(a).equals(Files.getLastModifiedTime(b));
     }
 
     /**

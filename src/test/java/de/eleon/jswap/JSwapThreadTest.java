@@ -13,6 +13,8 @@ import java.util.concurrent.Callable;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static de.eleon.jswap.test.Util.dropCreate;
+import static java.nio.file.Files.createDirectory;
+import static java.nio.file.Files.createFile;
 
 public class JSwapThreadTest {
 
@@ -24,7 +26,6 @@ public class JSwapThreadTest {
 
     @Before
     public void setUp() throws IOException {
-        System.out.println("setUp");
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
         baseFromB = dropCreate("/tmp/fromB");
@@ -37,7 +38,7 @@ public class JSwapThreadTest {
     public void shouldCopyFile() throws Exception {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         jSwap.run(true);
-        Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        createFile(Paths.get(baseFrom.toString() + "/test.txt"));
 
         await("copy process")
                 .until(fileExists(Paths.get(baseTo.toString() + "/test.txt")));
@@ -51,7 +52,7 @@ public class JSwapThreadTest {
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
 
-        Files.createFile(Paths.get(baseFrom.toString() + "/test.txt"));
+        createFile(Paths.get(baseFrom.toString() + "/test.txt"));
 
         await("copy process")
                 .until(fileExists(Paths.get(baseTo.toString() + "/test.txt")));
@@ -62,8 +63,8 @@ public class JSwapThreadTest {
         JSwap jSwap = new JSwap(ImmutableList.<Config>builder().add(new Config(baseFrom.toString(), baseTo.toString(), "")).build());
         jSwap.run(true);
 
-        Files.createDirectory(Paths.get(baseFrom.toString() + "/dir"));
-        Files.createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
+        createDirectory(Paths.get(baseFrom.toString() + "/dir"));
+        createFile(Paths.get(baseFrom.toString() + "/dir/test.txt"));
 
         await("copy process")
                 .until(fileExists(Paths.get(baseTo.toString() + "/dir/test.txt")));

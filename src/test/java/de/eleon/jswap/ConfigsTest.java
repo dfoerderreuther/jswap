@@ -25,9 +25,9 @@ import org.junit.rules.ExpectedException;
 import java.util.List;
 import java.util.Properties;
 
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 public class ConfigsTest {
 

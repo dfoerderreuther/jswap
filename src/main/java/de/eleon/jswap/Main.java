@@ -27,14 +27,14 @@ import java.util.List;
  */
 public class Main {
 
-    protected static JSwap JSwap;
+    protected static JSwap jSwap;
 
     public static void main(String[] args) {
         Log.LOG("init");
         try {
             List<Config> configs = Configs.getConfigsFromSystemProperties("jswap");
-            JSwap = new JSwap(configs);
-            JSwap.run(false);
+            jSwap = new JSwap(configs);
+            jSwap.run(false);
         } catch (IllegalArgumentException e) {
             throw new UnsupportedOperationException("\nUsage: \n" +
                     "java -jar <pathTo>/jswap-agent.jar \\\n" +

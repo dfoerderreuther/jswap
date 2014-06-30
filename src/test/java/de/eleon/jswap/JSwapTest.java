@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static de.eleon.jswap.test.Util.dropCreate;
+import static de.eleon.jswap.test.Files.dropCreate;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Files.createDirectory;
 import static java.nio.file.Files.createFile;

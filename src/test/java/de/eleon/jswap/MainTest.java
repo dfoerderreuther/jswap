@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Path;
 
-import static de.eleon.jswap.test.Util.dropCreate;
+import static de.eleon.jswap.test.Files.dropCreate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MainTest extends TestCase {
@@ -48,8 +48,8 @@ public class MainTest extends TestCase {
         System.setProperty("jswap.to[0]", baseTo.toString());
 
         Main.main(new String[]{});
-        assertTrue(Main.JSwap.active());
+        assertTrue(Main.jSwap.active());
 
-        Main.JSwap.stop();
+        Main.jSwap.stop();
     }
 }

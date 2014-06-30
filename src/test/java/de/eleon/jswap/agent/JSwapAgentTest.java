@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Path;
 
-import static de.eleon.jswap.test.Util.dropCreate;
+import static de.eleon.jswap.test.Files.dropCreate;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -50,7 +50,7 @@ public class JSwapAgentTest extends TestCase {
         baseFrom = dropCreate("/tmp/from");
         baseTo = dropCreate("/tmp/to");
         JSwapAgent.instrumentation = null;
-        JSwapAgent.JSwap = null;
+        JSwapAgent.jSwap = null;
         System.setProperty("jswap.from[0]", "");
         System.setProperty("jswap.to[0]", "");
     }
@@ -67,9 +67,9 @@ public class JSwapAgentTest extends TestCase {
         System.setProperty("jswap.to[0]", baseTo.toString());
 
         JSwapAgent.premain("", instrumentation);
-        assertTrue(JSwapAgent.JSwap.active());
+        assertTrue(JSwapAgent.jSwap.active());
 
-        JSwapAgent.JSwap.stop();
+        JSwapAgent.jSwap.stop();
     }
 
     @Test
@@ -78,9 +78,9 @@ public class JSwapAgentTest extends TestCase {
         System.setProperty("jswap.to[0]", baseTo.toString());
 
         JSwapAgent.agentmain("", instrumentation);
-        assertTrue(JSwapAgent.JSwap.active());
+        assertTrue(JSwapAgent.jSwap.active());
 
-        JSwapAgent.JSwap.stop();
+        JSwapAgent.jSwap.stop();
     }
 
     @Test

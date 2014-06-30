@@ -23,15 +23,15 @@ import java.util.Date;
 public class Log {
 
     public static void LOG(String message, Object... args) {
-        System.out.printf("JSwap - %s: %s\n", new Date(), String.format(message, args));
+        System.out.printf("jSwap - %s: %s\n", new Date(), String.format(message, args));
     }
 
     public static void ERROR(String message, Object... args) {
-        System.err.printf("JSwap - %s: %s\n", new Date(), String.format(message, args));
+        System.err.printf("jSwap - %s: %s\n", new Date(), String.format(message, args));
     }
 
     public static void ERROR(Throwable e, String message, Object... args) {
-        System.err.printf("JSwap - %s: %s\n%s\n", new Date(), String.format(message, args), e.fillInStackTrace());
+        System.err.printf("jSwap - %s: %s\n%s\n", new Date(), String.format(message, args), e.fillInStackTrace());
     }
 
 }

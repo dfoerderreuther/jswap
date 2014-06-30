@@ -30,7 +30,7 @@ import java.util.List;
 public class JSwapAgent {
 
     protected static Instrumentation instrumentation;
-    protected static JSwap JSwap;
+    protected static JSwap jSwap;
 
     private static ClassFileTransformer transformer = new ClassPreProcessorAgentAdapter();
 
@@ -47,7 +47,10 @@ public class JSwapAgent {
         start();
 
         JSwapAgent.instrumentation.addTransformer(transformer);
+
+
         SpringLoadedPreProcessor.registerGlobalPlugin(new ReloadObserver());
+        Log.LOG("AGENT STARTED");
 
     }
 
@@ -55,8 +58,8 @@ public class JSwapAgent {
         Log.LOG("init");
         try {
             List<Config> configs = Configs.getConfigsFromSystemProperties("jswap");
-            JSwap = new JSwap(configs);
-            JSwap.run(true);
+            jSwap = new JSwap(configs);
+            jSwap.run(true);
         } catch (IllegalArgumentException e) {
             throw new UnsupportedOperationException("\nJVM was not started with \n" +
                     "<pathTo>/jswap-agent.jar \\\n" +

@@ -21,7 +21,7 @@ public class ReloadObserver implements ReloadEventProcessorPlugin {
 
     @Override
     public boolean shouldRerunStaticInitializer(String typename, Class<?> clazz, String encodedTimestamp) {
-        return false;
+        return true;
     }
 
     @Override

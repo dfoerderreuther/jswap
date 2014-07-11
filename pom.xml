@@ -10,6 +10,7 @@
 
     <modules>
          <module>jswap-agent</module>
+        <module>jswap-inner</module>
     </modules>
 
     <scm>
@@ -85,6 +86,12 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>4.0.1.RELEASE</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>3.18.2-GA</version>
             </dependency>
 
             <!-- Test -->

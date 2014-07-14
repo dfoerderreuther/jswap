@@ -34,8 +34,8 @@
                                     <Premain-Class>de.eleon.jswap.agent.JSwapAgent</Premain-Class>
                                     <Agent-Class>de.eleon.jswap.agent.JSwapAgent</Agent-Class>
                                     <Main-Class>de.eleon.jswap.Main</Main-Class>
-                                    <Can-Redefine-Classes>false</Can-Redefine-Classes>
-                                    <Can-Retransform-Classes>false</Can-Retransform-Classes>
+                                    <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                    <Can-Retransform-Classes>true</Can-Retransform-Classes>
                                 </manifestEntries>
                             </archive>
                             <finalName>jswap-agent</finalName>
@@ -48,26 +48,13 @@
         </plugins>
     </build>
 
+
+
     <dependencies>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
         </dependency>
 
         <!-- Test -->

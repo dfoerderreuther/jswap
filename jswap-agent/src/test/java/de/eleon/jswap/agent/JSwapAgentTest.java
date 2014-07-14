@@ -73,22 +73,11 @@ public class JSwapAgentTest extends TestCase {
     }
 
     @Test
-    public void shouldStartWithAgentmain() throws Exception {
-        System.setProperty("jswap.from[0]", baseFrom.toString());
-        System.setProperty("jswap.to[0]", baseTo.toString());
-
-        JSwapAgent.agentmain("", instrumentation);
-        assertTrue(JSwapAgent.jSwap.active());
-
-        JSwapAgent.jSwap.stop();
-    }
-
-    @Test
     public void shouldSetInstrumentation() throws Exception {
         System.setProperty("jswap.from[0]", baseFrom.toString());
         System.setProperty("jswap.to[0]", baseTo.toString());
 
-        JSwapAgent.agentmain("", instrumentation);
+        JSwapAgent.premain("", instrumentation);
         assertThat(JSwapAgent.getInstrumentation(), is(instrumentation));
     }
 

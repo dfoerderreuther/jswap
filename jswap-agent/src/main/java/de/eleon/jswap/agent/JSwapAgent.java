@@ -16,7 +16,6 @@
 package de.eleon.jswap.agent;
 
 import de.eleon.jswap.*;
-import de.eleon.jswap.spring.SpringContextClassfileTransformer;
 import org.springsource.loaded.agent.ClassPreProcessorAgentAdapter;
 import org.springsource.loaded.agent.SpringLoadedPreProcessor;
 
@@ -32,15 +31,10 @@ public class JSwapAgent {
 
     protected static Instrumentation instrumentation;
     protected static JSwap jSwap;
-    private static SpringContextClassfileTransformer springContextClassfileTransformer = new SpringContextClassfileTransformer();
 
     private static ClassFileTransformer transformer = new ClassPreProcessorAgentAdapter();
 
     public static void premain(String args, Instrumentation instrumentation) throws Exception {
-        agentmain(args, instrumentation);
-    }
-
-    public static void agentmain(String args, Instrumentation instrumentation) throws Exception {
         if (JSwapAgent.instrumentation != null) {
             return;
         }
@@ -49,7 +43,6 @@ public class JSwapAgent {
         start();
 
         JSwapAgent.instrumentation.addTransformer(transformer);
-        JSwapAgent.instrumentation.addTransformer(springContextClassfileTransformer, false);
 
         SpringLoadedPreProcessor.registerGlobalPlugin(new ReloadObserver());
 

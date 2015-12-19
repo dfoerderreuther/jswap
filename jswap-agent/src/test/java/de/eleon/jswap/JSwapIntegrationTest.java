@@ -72,7 +72,6 @@ public class JSwapIntegrationTest {
 
     private Callable<Boolean> fileExists(final Path path) {
         return new Callable<Boolean>() {
-            @Override
             public Boolean call() throws Exception {
                 return Files.exists(path);
             }

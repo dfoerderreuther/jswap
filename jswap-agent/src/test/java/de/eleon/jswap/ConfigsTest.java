@@ -102,7 +102,6 @@ public class ConfigsTest {
 
     private Optional<Config> byFrom(List<Config> configs, final String from) {
         return FluentIterable.from(configs).firstMatch(new Predicate<Config>() {
-            @Override
             public boolean apply(Config config) {
                 return config.getFrom().toString().equals(from);
             }

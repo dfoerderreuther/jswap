@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringStartupListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         for (int i = 0; i < 100; i++)
             System.out.println("SpringStartupListener");

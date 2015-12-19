@@ -60,7 +60,6 @@ public class JSwap {
     public void run(final boolean daemon) {
         initExecutor = Executors.newSingleThreadScheduledExecutor(getThreadFactory(daemon));
         initExecutor.scheduleWithFixedDelay(new Runnable() {
-            @Override
             public void run() {
                 init();
             }
@@ -68,7 +67,6 @@ public class JSwap {
 
         watchExecutor = Executors.newSingleThreadScheduledExecutor(getThreadFactory(daemon));
         watchExecutor.scheduleWithFixedDelay(new Runnable() {
-            @Override
             public void run() {
                 watch();
             }
@@ -77,7 +75,6 @@ public class JSwap {
 
     private ThreadFactory getThreadFactory(final boolean daemon) {
         return new ThreadFactory() {
-            @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
                 t.setDaemon(daemon);
